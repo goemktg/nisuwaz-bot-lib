@@ -56,7 +56,7 @@ function makeMessageLink(message) {
 }
 
 function isBanTarget(charInfoByType, recruiterRoleID) {
-    const {banData, banDataStringMapping} = require('./data.js');
+    const {banData, banDataStringMapping} = require('../data.js');
 
     let returnBoolean = false;
     let returnString = '';
