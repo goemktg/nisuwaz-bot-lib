@@ -1,10 +1,6 @@
 const { REST, Routes, Collection } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const dotenv = require('dotenv');
-
-// 환경변수 불러옴
-dotenv.config();
 
 // 모듈로 사용될 경우
 if (require.main !== module)
@@ -14,6 +10,10 @@ else
 	handleCommands('deploy');
 
 async function handleCommands(type) {
+	// deploy 시 env 불러옴
+	if (type === 'deploy')
+		require('dotenv').config();
+
 	const commands = [];
 	const outputCommands = new Collection();
 	const commandsPath = path.join(__dirname, '../commands');
