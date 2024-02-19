@@ -6,7 +6,7 @@ const path = require('node:path');
 if (require.main !== module)
 	module.exports = handleCommands;
 // 독립적으로 실행될 경우
-else 
+else
 	handleCommands('deploy');
 
 async function handleCommands(type) {
@@ -19,7 +19,7 @@ async function handleCommands(type) {
 	const commandsPath = path.join(__dirname, '../commands');
 	// commands 풀더에 위치한 모든 .js 파일을 불러옴
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-	
+
 	// 배포 전에 배포 무시할 명령어들을 가져옴
 	const ignoreCommands = JSON.parse(process.env.IGNORE_COMMANDS).list;
 
@@ -30,14 +30,14 @@ async function handleCommands(type) {
 		// 무시할 명령어 목록에 해당 명령아가 있으면 스킵
 		if (ignoreCommands.includes(command.data.name))
 			continue;
-		
+
 		commands.push(command.data.toJSON());
-	
+
 		outputCommands.set(command.data.name, command);
 	}
 	// REST 모듈 instance 생성 및 준비
 	const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
-	
+
 	// init 모드일시 배포하지 않고 명령어 목록 리턴함
 	if (type === 'init')
 		return outputCommands;
@@ -46,16 +46,16 @@ async function handleCommands(type) {
 	try {
 		console.log(`Started deleting ALL application (/) commands.`);
 
-		const data = await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: [] })
-		.then(() => console.log('Successfully deleted all application commands.'))
-		.then(() => {
-			console.log(`Started deploying ${commands.length} application (/) commands.`);
+		const data = await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), { body: [] })
+			.then(() => console.log('Successfully deleted all application commands.'))
+			.then(() => {
+				console.log(`Started deploying ${commands.length} application (/) commands.`);
 
-			return rest.put(
-				Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.DEPLOY_TARGET_GUILD_ID),
-				{ body: commands },
-			);
-		});
+				return rest.put(
+					Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
+					{ body: commands },
+				);
+			});
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
