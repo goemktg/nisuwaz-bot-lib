@@ -3,16 +3,17 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 // 모듈로 사용될 경우
-if (require.main !== module)
+if (require.main !== module) {
 	module.exports = handleCommands;
+}
 // 독립적으로 실행될 경우
-else
+else {
 	handleCommands('deploy');
+}
 
 async function handleCommands(type) {
 	// deploy 시 env 불러옴
-	if (type === 'deploy')
-		require('dotenv').config();
+	if (type === 'deploy') {require('dotenv').config();}
 
 	const commands = [];
 	const outputCommands = new Collection();
@@ -28,8 +29,7 @@ async function handleCommands(type) {
 		const command = require(`${commandsPath}/${file}`);
 
 		// 무시할 명령어 목록에 해당 명령아가 있으면 스킵
-		if (ignoreCommands.includes(command.data.name))
-			continue;
+		if (ignoreCommands.includes(command.data.name)) {continue;}
 
 		commands.push(command.data.toJSON());
 
@@ -39,12 +39,11 @@ async function handleCommands(type) {
 	const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 	// init 모드일시 배포하지 않고 명령어 목록 리턴함
-	if (type === 'init')
-		return outputCommands;
+	if (type === 'init') {return outputCommands;}
 
 	// 명령어 배포
 	try {
-		console.log(`Started deleting ALL application (/) commands.`);
+		console.log('Started deleting ALL application (/) commands.');
 
 		const data = await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), { body: [] })
 			.then(() => console.log('Successfully deleted all application commands.'))
@@ -58,7 +57,8 @@ async function handleCommands(type) {
 			});
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error);
 	}
 }

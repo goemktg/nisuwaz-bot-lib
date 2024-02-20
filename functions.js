@@ -1,3 +1,6 @@
+/**
+ * .env 파일 또는 Docker 환경 변수에서 환경 변수를 로드합니다.
+ */
 function loadEnvironmentVariables() {
 	try {
 		const dotenv = require('dotenv');
