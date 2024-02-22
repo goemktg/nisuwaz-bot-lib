@@ -4,19 +4,6 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 // 모듈로 사용될 경우
-<<<<<<< HEAD
-if (require.main !== module) {
-	module.exports = handleCommands;
-}
-// 독립적으로 실행될 경우
-else {
-	handleCommands('deploy');
-}
-
-async function handleCommands(type) {
-	// deploy 시 env 불러옴
-	if (type === 'deploy') {require('dotenv').config();}
-=======
 if (require.main !== module) {module.exports = handleCommands;}
 // 독립적으로 실행될 경우
 else {handleCommands('deploy');}
@@ -24,7 +11,6 @@ else {handleCommands('deploy');}
 async function handleCommands(type) {
 	// deploy 시 env 불러옴
 	if (type === 'deploy') {loadEnvironmentVariables();}
->>>>>>> 1439bd7 (feat: 시트 API 처리를 담당하는 SeatRequest 클래스 추가)
 
 	const commands = [];
 	const outputCommands = new Collection();
