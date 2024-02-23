@@ -11,6 +11,14 @@ function loadEnvironmentVariables() {
 	}
 }
 
+async function getAuditTargetNickname(auditLog, client) {
+	const user = await client.users.fetch(auditLog.targetId);
+	const member = await client.guilds.cache.get('337276039858356224').members.fetch(user.id);
+	const nickname = member.nickname;
+
+	return nickname;
+}
+
 // FIXME: 더 깔끔한 로직으로 변경 필요
 async function checkRecruitStage(channel, recruitString) {
 	// 메시지 포인터 생성
@@ -98,4 +106,4 @@ function isBanTarget(charInfoByType, recruiterRoleID) {
 }
 
 // Export the function
-module.exports = { checkRecruitStage, makeMessageLink, getRecruitInfo, isBanTarget, loadEnvironmentVariables };
+module.exports = { checkRecruitStage, makeMessageLink, getRecruitInfo, isBanTarget, loadEnvironmentVariables, getAuditTargetNickname };
