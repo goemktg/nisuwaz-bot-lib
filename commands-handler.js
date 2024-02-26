@@ -3,7 +3,7 @@ const { loadEnvironmentVariables } = require('./functions.js');
 const fs = require('node:fs');
 const path = require('node:path');
 
-class commandsHandler {
+class CommandsHandler {
 	getCommands() {
 		const commands = [];
 		const outputCommands = new Collection();
@@ -74,11 +74,11 @@ class commandsHandler {
 }
 
 // 모듈로 사용될 경우
-if (require.main !== module) {module.exports = commandsHandler;}
+if (require.main !== module) {module.exports = CommandsHandler;}
 // 독립적으로 실행될 경우
 else {
 	loadEnvironmentVariables();
 
-	const commandHandler = new commandsHandler();
+	const commandHandler = new CommandsHandler();
 	commandHandler.depolyCommands();
 }
