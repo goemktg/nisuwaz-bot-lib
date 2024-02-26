@@ -11,13 +11,11 @@ function loadEnvironmentVariables() {
 	}
 }
 
-async function getAuditTargetNickname(auditLog, client) {
-	const user = await client.users.fetch(auditLog.targetId);
-	const member = await client.guilds.cache.get('337276039858356224').members.fetch(user.id);
-	const nickname = member.nickname;
+async function getAuditTargetNickname(auditLog, guild) {
+	const user = await guild.client.users.fetch(auditLog.targetId);
+	const member = await guild.members.fetch(user.id);
 
-	return nickname;
+	return member.nickname;
 }
 
-// Export the function
 module.exports = { loadEnvironmentVariables, getAuditTargetNickname };
