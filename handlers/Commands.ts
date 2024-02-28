@@ -45,16 +45,16 @@ export class CommandsHandler {
 
 		console.log('Started deleting ALL application (/) commands.');
 
-		void rest.put(Routes.applicationCommands(clientId), { body: [] })
+		await rest.put(Routes.applicationCommands(clientId), { body: [] })
 			.then(() => console.log('Successfully deleted all application commands.'))
 			.then(async () => {
-				console.log(`Started deploying ${commands.values.length} application (/) commands.`);
+				console.log(`Started deploying ${commands.size} application (/) commands.`);
 
 				await rest.put(Routes.applicationCommands(clientId),
-					{ body: commands.map(command => () => command.command.toJSON()) },
+					{ body: commands.map(command => command.command.toJSON()) },
 				);
 			})
-			.then(() => console.log(`Successfully deployed ${commands.values.length} application (/) commands.`));
+			.then(() => console.log(`Successfully deployed ${commands.size} application (/) commands.`));
 	}
 
 	async executeCommand(interaction: ChatInputCommandInteraction) {
