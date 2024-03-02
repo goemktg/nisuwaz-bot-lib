@@ -9,11 +9,6 @@ export interface SlashCommand {
     cooldown?: number,
 }
 
-export interface DiscordRole {
-    id: string,
-    name: string,
-}
-
 declare module 'discord.js' {
     export interface Client {
         commands: Collection<string, SlashCommand>,

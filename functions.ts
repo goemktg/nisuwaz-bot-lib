@@ -1,5 +1,4 @@
 import { GuildAuditLogsEntry, Guild, Client, ActivityType, ClientUser } from 'discord.js';
-import { DiscordRole } from './types';
 import log from 'loglevel';
 
 /**
@@ -35,6 +34,10 @@ export async function getAuditTargetNickname(auditLog: GuildAuditLogsEntry, guil
 	return member.nickname;
 }
 
+interface DiscordRole {
+    id: string,
+    name: string,
+}
 /**
  * auditLogsEntry 에서의 뉴비 롤 권한 변경을 반영합니다.
  *
