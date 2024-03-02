@@ -2,6 +2,7 @@ import { REST, Routes, Collection, ChatInputCommandInteraction } from 'discord.j
 import { SlashCommand } from '../types';
 import fs from 'node:fs';
 import path from 'node:path';
+import log from 'loglevel';
 
 interface CommandFile {
 	default: SlashCommand
@@ -12,7 +13,7 @@ export class CommandsHandler {
 		let ignoreCommands: Array<string> = [];
 
 		if (!process.env.DISCORD_IGNORED_COMMANDS) {
-			console.log('WARN/ DISCORD_IGNORED_COMMANDS is not defined in .env file. Ignoring no commands.');
+			log.warn('DISCORD_IGNORED_COMMANDS is not defined in .env file. Ignoring no commands.');
 		}
 		else {
 			ignoreCommands = JSON.parse(process.env.DISCORD_IGNORED_COMMANDS) as Array<string>;
@@ -43,18 +44,18 @@ export class CommandsHandler {
 		const commands = await this.getCommandsFromDir();
 		const clientId = process.env.DISCORD_CLIENT_ID;
 
-		console.log('Started deleting ALL application (/) commands.');
+		log.info('Started deleting ALL application (/) commands.');
 
 		await rest.put(Routes.applicationCommands(clientId), { body: [] })
-			.then(() => console.log('Successfully deleted all application commands.'))
+			.then(() => log.info('Successfully deleted all application commands.'))
 			.then(async () => {
-				console.log(`Started deploying ${commands.size} application (/) commands.`);
+				log.info(`Started deploying ${commands.size} application (/) commands.`);
 
 				await rest.put(Routes.applicationCommands(clientId),
 					{ body: commands.map(command => command.command.toJSON()) },
 				);
 			})
-			.then(() => console.log(`Successfully deployed ${commands.size} application (/) commands.`));
+			.then(() => log.info(`Successfully deployed ${commands.size} application (/) commands.`));
 	}
 
 	async executeCommand(interaction: ChatInputCommandInteraction) {

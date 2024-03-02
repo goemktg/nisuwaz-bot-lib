@@ -1,5 +1,6 @@
-import { GuildAuditLogsEntry, Guild } from 'discord.js';
+import { GuildAuditLogsEntry, Guild, Client, ActivityType, ClientUser } from 'discord.js';
 import { DiscordRole } from './types';
+import log from 'loglevel';
 
 /**
  * .env 파일 또는 Docker 환경 변수에서 환경 변수를 로드합니다.
@@ -9,7 +10,7 @@ export function loadEnvironmentVariables() {
 		require('./loadEnvironmentVariables');
 	}
 	catch (ex) {
-		console.log('.env not found. using docker environment variable');
+		log.warn('.env not found. using docker environment variable');
 	}
 }
 
@@ -43,14 +44,35 @@ export async function getAuditTargetNickname(auditLog: GuildAuditLogsEntry, guil
  * @param {(a: string) => void} removeFunction - 롤 제거시 호출할 함수.
  */
 export function reflectNewbieRoleChange(auditLog: GuildAuditLogsEntry, nickname: string, addFunction: (a: string) => void, removeFunction: (a: string) => void) {
-	const watchRoleIds = ['1210191232756621383', '1210112780141600818'];
-
 	for (const change of auditLog.changes) {
 		for (const newRole of (change.new as DiscordRole[])) {
-			if (!watchRoleIds.includes(newRole.id)) continue;
+			if (!getNewbieRoleIds().includes(newRole.id)) continue;
 
 			if (change.key === '$add') {addFunction(nickname);}
 			else if (change.key === '$remove') {removeFunction(nickname);}
 		}
 	}
+}
+
+/**
+ * 뉴비 롤의 ID를 가져옵니다.
+ *
+ * @returns {string[]}
+ */
+export function getNewbieRoleIds(): string[] {
+	if (!process.env.DISCORD_NEWBIE_ROLE_IDS) {
+		throw new Error('DISCORD_NEWBIE_ROLE_IDS is not defined in environment variables.');
+	}
+
+	return JSON.parse(process.env.DISCORD_NEWBIE_ROLE_IDS) as string[];
+}
+
+export function setDiscordPresence(client: Client, state: string) {
+	(client.user as ClientUser).setPresence({
+		activities: [{
+			type: ActivityType.Custom,
+			name: 'custom',
+			state: state,
+		}],
+	});
 }

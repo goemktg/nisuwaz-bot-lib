@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { APIGetSeatUsersResponse } from '../types';
+import log from 'loglevel';
 
 export class SeatRequester {
 	private DeleteHeaders: object;
@@ -30,7 +31,7 @@ export class SeatRequester {
 	 * @param {string} seatReoleId
 	 */
 	async userRoleRemove(seatUserId: string, seatReoleId: string) {
-		console.log(`removing role ${seatUserId} from user ${seatReoleId}`);
+		log.info(`removing role ${seatUserId} from user ${seatReoleId}`);
 
 		await axios.delete(`https://seat.nisuwaz.com/api/v2/roles/members/${seatUserId}/${seatReoleId}`, { headers: this.DeleteHeaders });
 	}
@@ -41,7 +42,7 @@ export class SeatRequester {
 	 * @param {string} seatReoleId
 	 */
 	async userRoleAdd(seatUserId: string, seatReoleId: string) {
-		console.log(`adding role ${seatUserId} to user ${seatReoleId}`);
+		log.info(`adding role ${seatUserId} to user ${seatReoleId}`);
 
 		const url = 'https://seat.nisuwaz.com/api/v2/roles/members';
 		const data = {
@@ -64,3 +65,33 @@ export class SeatRequester {
 		return await response.data as APIGetSeatUsersResponse;
 	}
 };
+
+export interface APIGetSeatUsersResponse {
+    data: SeatUser[],
+    links: {
+        first: string,
+        last: string,
+        prev: string,
+        next: string,
+    },
+    meta: {
+        current_page: number,
+        from: number,
+        last_page: number,
+        path: string,
+        per_page: number,
+        to: number,
+        total: number,
+    },
+}
+
+export interface SeatUser {
+    id: number,
+    name: string,
+    email: string,
+    active: boolean,
+    last_login: string,
+    last_login_source: string,
+    associated_character_ids: string[],
+    main_character_id: string,
+}
