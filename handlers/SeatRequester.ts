@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { APIGetSeatUsersResponse } from '../types';
 import log from 'loglevel';
 
 export class SeatRequester {
