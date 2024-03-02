@@ -38,6 +38,7 @@ interface DiscordRole {
     id: string,
     name: string,
 }
+
 /**
  * auditLogsEntry 에서의 뉴비 롤 권한 변경을 반영합니다.
  *
@@ -70,6 +71,9 @@ export function getNewbieRoleIds(): string[] {
 	return JSON.parse(process.env.DISCORD_NEWBIE_ROLE_IDS) as string[];
 }
 
+/**
+ * 디스코드 상태를 설정합니다.
+ */
 export function setDiscordPresence(client: Client, state: string) {
 	(client.user as ClientUser).setPresence({
 		activities: [{
