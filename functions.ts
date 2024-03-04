@@ -1,5 +1,5 @@
-import { GuildAuditLogsEntry, Guild, Client, ActivityType, ClientUser } from 'discord.js';
-import log from 'loglevel';
+import { GuildAuditLogsEntry, Guild, Client, ActivityType, ClientUser, TextChannel, MessageCreateOptions } from 'discord.js';
+import log, { LogLevelDesc } from 'loglevel';
 
 /**
  * .env 파일 또는 Docker 환경 변수에서 환경 변수를 로드합니다.
@@ -82,4 +82,29 @@ export function setDiscordPresence(client: Client, state: string) {
 			state: state,
 		}],
 	});
+}
+
+/**
+ * 공지 채널 메시지가 같은지 확인하고 다르면 새로운 메시지를 보냅니다.
+ *
+ * @param {TextChannel} channel - 공지 채널
+ * @param {MessageCreateOptions} msg - 메시지 내용
+ */
+export async function sendAnnouncementMsg(channel: TextChannel, msg: MessageCreateOptions) {
+	log.info(`Checking notice channel... in guild: ${channel.guild.name} (${channel.guild.id})`);
+	const messages = await channel.messages.fetch();
+	if (messages.size === 0) return;
+
+	if (!(messages.first()?.content.trim() === msg.content?.trim()) || !(JSON.stringify(messages.first()?.components) === JSON.stringify(msg.components))) {
+		log.info('Message is not same. Deleting old message and sending new message...');
+		await messages.first()?.delete();
+		await channel.send(msg);
+	}
+}
+
+/**
+ * 로그 레벨을 설정합니다
+ */
+export function setDefaultLogLevel() {
+	log.setDefaultLevel(process.env.LOG_LEVEL as LogLevelDesc || 'INFO');
 }
