@@ -22,7 +22,7 @@ export class CommandsHandler {
 		const commands : Collection<string, SlashCommand> = new Collection();
 
 		const commandsDir = path.join(__dirname, '../../commands');
-		const commandFiles = fs.readdirSync(commandsDir).filter(file => file.endsWith('.ts'));
+		const commandFiles = fs.readdirSync(commandsDir).filter(file => file.endsWith('.js'));
 
 		for (const file of commandFiles) {
 			// const commandFile = await import(`${commandsDir}/${file}`);
