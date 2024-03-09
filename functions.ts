@@ -74,8 +74,8 @@ export function getNewbieRoleIds(): string[] {
 /**
  * 디스코드 상태를 설정합니다.
  */
-export function setDiscordPresence(client: Client, state: string) {
-	(client.user as ClientUser).setPresence({
+export function setDiscordPresence(clientUser: ClientUser, state: string) {
+	clientUser.setPresence({
 		activities: [{
 			type: ActivityType.Custom,
 			name: 'custom',
@@ -85,22 +85,34 @@ export function setDiscordPresence(client: Client, state: string) {
 }
 
 /**
- * 공지 채널 메시지가 같은지 확인하고 다르면 새로운 메시지를 보냅니다.
+ * 환경 변수에서 안내 채널 ID 목록을 가져와 각 채널마다 공지 채널 메시지가 같은지 확인하고 다르면 새로운 메시지를 보냅니다.
  *
- * @param {TextChannel} channel - 공지 채널
+ * @param {Client} client - 디스코드 클라이언트
  * @param {MessageCreateOptions} msg - 메시지 내용
  */
-export async function sendAnnouncementMsg(channel: TextChannel, msg: MessageCreateOptions) {
-	log.info(`Checking notice channel... in guild: ${channel.guild.name} (${channel.guild.id})`);
-	const messages = await channel.messages.fetch();
-	if (messages.size === 0) return;
-
-	if (!(messages.first()?.content.trim() === msg.content?.trim()) || !(JSON.stringify(messages.first()?.components) === JSON.stringify(msg.components))) {
-		log.info('Message is not same. Deleting old message and sending new message...');
-		await messages.first()?.delete();
-		await channel.send(msg);
+export async function sendAnnouncementMsgs(client: Client, msg: MessageCreateOptions) {
+	if (!process.env.DISCORD_NOTICE_CHANNEL_IDS) {
+		throw new Error('DISCORD_NOTICE_CHANNEL_IDS is not defined in environment variables.');
 	}
+
+	const noticeChannelIds = JSON.parse(process.env.DISCORD_NOTICE_CHANNEL_IDS) as string[];
+	for (const channelId of noticeChannelIds) {
+		const channel = await client.channels.fetch(channelId) as TextChannel;
+
+		log.info(`Checking notice channel... in guild: ${channel.guild.name} (${channel.guild.id})`);
+		const messages = await channel.messages.fetch();
+		if (messages.size === 0) return;
+
+		if (!(messages.first()?.content.trim() === msg.content?.trim()) || !(JSON.stringify(messages.first()?.components) === JSON.stringify(msg.components))) {
+			log.info('Message is not same. Deleting old message and sending new message...');
+			await messages.first()?.delete();
+			await channel.send(msg);
+		}
+	}
+
+	log.info('Checked All Notice Channels.');
 }
+
 
 /**
  * 로그 레벨을 설정합니다

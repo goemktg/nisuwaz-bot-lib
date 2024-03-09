@@ -24,25 +24,37 @@ export class EsiRequester {
 		return response.data as APIgetIdsFromNamesResponse;
 	}
 
-	// async getNamesFromIds(idArray: number[]) {
-	// 	const url = 'https://esi.evetech.net/latest/universe/names/?datasource=tranquility&language=en';
+	async getNamesFromIds(idArray: number[]) {
+		const url = 'https://esi.evetech.net/latest/universe/names/?datasource=tranquility&language=en';
 
-	// 	const response = await axios.post(url, idArray, { headers: this.PostHeaders });
-	// 	return response.data;
-	// }
+		const response = await axios.post(url, idArray, { headers: this.PostHeaders });
+		return response.data as APIgetNamesFromIdsObject[];
+	}
 
-	// async getCorpHistory(characterId: string) {
-	// 	const response = await axios.get(`https://esi.evetech.net/latest/characters/${characterId}/corporationhistory/?datasource=tranquility`, { headers: this.GetHeaders });
+	async getCorpHistoryFromCharId(characterId: string) {
+		const response = await axios.get(`https://esi.evetech.net/latest/characters/${characterId}/corporationhistory/?datasource=tranquility`, { headers: this.GetHeaders });
 
-	// 	return response.data;
-	// }
+		return response.data as APIcorpHistoryObject[];
+	}
 };
 
 interface APIgetIdsFromNamesResponse {
-    characters?: APIgetIdsFromNamesResponseObject[],
+    characters?: APIcharacterObject[],
 }
 
-interface APIgetIdsFromNamesResponseObject {
+interface APIcharacterObject {
 	id: number,
 	name: string,
+}
+
+interface APIcorpHistoryObject {
+	corporation_id: number,
+	record_id: number,
+	start_date: string,
+}
+
+interface APIgetNamesFromIdsObject {
+	category: 'corporation'
+	id: number
+	name: string
 }
