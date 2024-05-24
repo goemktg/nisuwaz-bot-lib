@@ -101,13 +101,19 @@ export async function sendAnnouncementMsgs(client: Client, msg: MessageCreateOpt
 
 		log.info(`Checking notice channel... in guild: ${channel.guild.name} (${channel.guild.id})`);
 		const messages = await channel.messages.fetch();
-		if (messages.size === 0) return;
+		if (messages.size === 0) {
+			log.info('No message found. Sending new message...');
+			await channel.send(msg);
+			continue;
+		};
 
-		if (!(messages.first()?.content.trim() === msg.content?.trim()) || !(JSON.stringify(messages.first()?.components) === JSON.stringify(msg.components))) {
+		if (messages.first()?.content.trim() != msg.content?.trim()) {
 			log.info('Message is not same. Deleting old message and sending new message...');
 			await messages.first()?.delete();
 			await channel.send(msg);
 		}
+
+		log.info('Message is same.');
 	}
 
 	log.info('Checked All Notice Channels.');
