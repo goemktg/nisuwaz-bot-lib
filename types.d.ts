@@ -1,8 +1,8 @@
-import { ChatInputCommandInteraction, AutocompleteInteraction, ModalSubmitInteraction, SlashCommandBuilder, CacheType, Collection } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandSubcommandsOnlyBuilder, SlashCommandOptionsOnlyBuilder, AutocompleteInteraction, ModalSubmitInteraction, CacheType, Collection } from 'discord.js';
 import { SeatRoleApplier } from '../SeatRoleApplier';
 
 export interface SlashCommand {
-    command: SlashCommandBuilder,
+    command: SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder,
     execute: (interaction : ChatInputCommandInteraction) => void,
     autocomplete?: (interaction: AutocompleteInteraction) => void,
     modal?: (interaction: ModalSubmitInteraction<CacheType>) => void,
