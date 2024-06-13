@@ -14,7 +14,7 @@ export function loadEnvironmentVariables() {
 }
 
 /**
- * auditlog 대상의 닉네임을 가져옵니다.
+ * audit log 대상의 닉네임을 가져옵니다.
  * @param {GuildAuditLogsEntry} auditLog
  * @param {Guild} guild
  *
