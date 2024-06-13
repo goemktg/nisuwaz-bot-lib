@@ -1,4 +1,4 @@
-import { GuildAuditLogsEntry, Guild, Client, ActivityType, ClientUser, TextChannel, MessageCreateOptions } from 'discord.js';
+import { GuildAuditLogsEntry, Guild, Client, ActivityType, TextChannel, MessageCreateOptions } from 'discord.js';
 import log, { LogLevelDesc } from 'loglevel';
 
 /**
@@ -17,9 +17,10 @@ export function loadEnvironmentVariables() {
  * auditlog 대상의 닉네임을 가져옵니다.
  * @param {GuildAuditLogsEntry} auditLog
  * @param {Guild} guild
- * @returns {Promise<string>}
+ *
+ * @returns {Promise<string | null>} - 닉네임이 있는 경우 닉네임을, 없으면 null을 반환합니다.
  */
-export async function getAuditTargetNickname(auditLog: GuildAuditLogsEntry, guild: Guild): Promise<string> {
+export async function getAuditTargetNickname(auditLog: GuildAuditLogsEntry, guild: Guild): Promise<string | null> {
 	if (!auditLog.targetId) {
 		throw new Error('auditLog.targetId is not defined.');
 	}
@@ -28,7 +29,7 @@ export async function getAuditTargetNickname(auditLog: GuildAuditLogsEntry, guil
 	const member = await guild.members.fetch(user.id);
 
 	if (!member.nickname) {
-		throw new Error('member.nickname is not defined.');
+		return null;
 	}
 
 	return member.nickname;
@@ -50,6 +51,7 @@ interface DiscordRole {
 export function reflectNewbieRoleChange(auditLog: GuildAuditLogsEntry, nickname: string, addFunction: (a: string) => void, removeFunction: (a: string) => void) {
 	for (const change of auditLog.changes) {
 		for (const newRole of (change.new as DiscordRole[])) {
+			// 뉴비 롤이 아닌 경우 건너뜁니다.
 			if (!getNewbieRoleIds().includes(newRole.id)) continue;
 
 			if (change.key === '$add') {addFunction(nickname);}
@@ -74,8 +76,8 @@ export function getNewbieRoleIds(): string[] {
 /**
  * 디스코드 상태를 설정합니다.
  */
-export function setDiscordPresence(clientUser: ClientUser, state: string) {
-	clientUser.setPresence({
+export function setDiscordPresence(client: Client, state: string) {
+	client.user?.setPresence({
 		activities: [{
 			type: ActivityType.Custom,
 			name: 'custom',
