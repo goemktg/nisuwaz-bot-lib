@@ -61,7 +61,7 @@ export class SeatRequester {
    * @param {number} page
    * @returns {Promise<APIGetSeatUsersResponse>}
    */
-  async getUsers(page: number = 1): Promise<APIGetSeatUsersResponse> {
+  async getUsers(page = 1): Promise<APIGetSeatUsersResponse> {
     const response = await axios.get(
       `https://seat.nisuwaz.com/api/v2/users?page=${page}`,
       { headers: this.GetHeaders },

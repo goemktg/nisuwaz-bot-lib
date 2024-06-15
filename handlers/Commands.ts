@@ -15,7 +15,7 @@ interface CommandFile {
 
 export class CommandsHandler {
   async getCommandsFromDir() {
-    let ignoreCommands: Array<string> = [];
+    let ignoreCommands: string[] = [];
 
     if (!process.env.DISCORD_IGNORED_COMMANDS) {
       log.warn(
@@ -24,10 +24,10 @@ export class CommandsHandler {
     } else {
       ignoreCommands = JSON.parse(
         process.env.DISCORD_IGNORED_COMMANDS,
-      ) as Array<string>;
+      ) as string[];
     }
 
-    const commands: Collection<string, SlashCommand> = new Collection();
+    const commands = new Collection<string, SlashCommand>();
 
     const commandsDir = path.join(__dirname, "../../commands");
     const commandFiles = fs
