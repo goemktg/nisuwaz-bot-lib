@@ -1,16 +1,22 @@
-import { GuildAuditLogsEntry, Guild, Client, ActivityType, TextChannel, MessageCreateOptions } from 'discord.js';
-import log, { LogLevelDesc } from 'loglevel';
+import {
+  GuildAuditLogsEntry,
+  Guild,
+  Client,
+  ActivityType,
+  TextChannel,
+  MessageCreateOptions,
+} from "discord.js";
+import log, { LogLevelDesc } from "loglevel";
 
 /**
  * .env 파일 또는 Docker 환경 변수에서 환경 변수를 로드합니다.
  */
 export function loadEnvironmentVariables() {
-	try {
-		require('./loadEnvironmentVariables');
-	}
-	catch (ex) {
-		log.warn('.env not found. using docker environment variable');
-	}
+  try {
+    require("./loadEnvironmentVariables");
+  } catch (ex) {
+    log.warn(".env not found. using docker environment variable");
+  }
 }
 
 /**
@@ -20,44 +26,58 @@ export function loadEnvironmentVariables() {
  *
  * @returns {Promise<string | null>} - 닉네임이 있는 경우 닉네임을, 없으면 null을 반환합니다.
  */
-export async function getAuditTargetNickname(auditLog: GuildAuditLogsEntry, guild: Guild): Promise<string | null> {
-	if (!auditLog.targetId) {
-		throw new Error('auditLog.targetId is not defined.');
-	}
+export async function getAuditTargetNickname(
+  auditLog: GuildAuditLogsEntry,
+  guild: Guild,
+): Promise<string | null> {
+  if (!auditLog.targetId) {
+    throw new Error("auditLog.targetId is not defined.");
+  }
 
-	const user = await guild.client.users.fetch(auditLog.targetId);
-	const member = await guild.members.fetch(user.id);
+  const user = await guild.client.users.fetch(auditLog.targetId);
+  const member = await guild.members.fetch(user.id);
 
-	if (!member.nickname) {
-		return null;
-	}
+  if (!member.nickname) {
+    return null;
+  }
 
-	return member.nickname;
+  return member.nickname;
 }
 
 interface DiscordRole {
-    id: string,
-    name: string,
+  id: string;
+  name: string;
 }
 
 /**
  * auditLogsEntry 에서의 뉴비 롤 권한 변경을 반영합니다.
  *
  * @param {GuildAuditLogsEntry} auditLog - 길드 auditLogsEntry.
- * @param {string} nickname - 유저의 닉네임.
+ * @param {string|null} nickname - 유저의 닉네임.
  * @param {(a: string) => void} addFunction - 롤 추가시 호출할 함수.
  * @param {(a: string) => void} removeFunction - 롤 제거시 호출할 함수.
  */
-export function reflectNewbieRoleChange(auditLog: GuildAuditLogsEntry, nickname: string, addFunction: (a: string) => void, removeFunction: (a: string) => void) {
-	for (const change of auditLog.changes) {
-		for (const newRole of (change.new as DiscordRole[])) {
-			// 뉴비 롤이 아닌 경우 건너뜁니다.
-			if (!getNewbieRoleIds().includes(newRole.id)) continue;
+export function reflectNewbieRoleChange(
+  auditLog: GuildAuditLogsEntry,
+  nickname: string | null,
+  addFunction: (a: string) => void,
+  removeFunction: (a: string) => void,
+) {
+  // 닉네임이 없는 경우 건너뜁니다. (닉네임이 없으면 니수와 맴버가 아님)
+  if (nickname === null) return;
 
-			if (change.key === '$add') {addFunction(nickname);}
-			else if (change.key === '$remove') {removeFunction(nickname);}
-		}
-	}
+  for (const change of auditLog.changes) {
+    for (const newRole of change.new as DiscordRole[]) {
+      // 뉴비 롤이 아닌 경우 건너뜁니다.
+      if (!getNewbieRoleIds().includes(newRole.id)) continue;
+
+      if (change.key === "$add") {
+        addFunction(nickname);
+      } else if (change.key === "$remove") {
+        removeFunction(nickname);
+      }
+    }
+  }
 }
 
 /**
@@ -66,24 +86,28 @@ export function reflectNewbieRoleChange(auditLog: GuildAuditLogsEntry, nickname:
  * @returns {string[]}
  */
 export function getNewbieRoleIds(): string[] {
-	if (!process.env.DISCORD_NEWBIE_ROLE_IDS) {
-		throw new Error('DISCORD_NEWBIE_ROLE_IDS is not defined in environment variables.');
-	}
+  if (!process.env.DISCORD_NEWBIE_ROLE_IDS) {
+    throw new Error(
+      "DISCORD_NEWBIE_ROLE_IDS is not defined in environment variables.",
+    );
+  }
 
-	return JSON.parse(process.env.DISCORD_NEWBIE_ROLE_IDS) as string[];
+  return JSON.parse(process.env.DISCORD_NEWBIE_ROLE_IDS) as string[];
 }
 
 /**
  * 디스코드 상태를 설정합니다.
  */
 export function setDiscordPresence(client: Client, state: string) {
-	client.user?.setPresence({
-		activities: [{
-			type: ActivityType.Custom,
-			name: 'custom',
-			state: state,
-		}],
-	});
+  client.user?.setPresence({
+    activities: [
+      {
+        type: ActivityType.Custom,
+        name: "custom",
+        state: state,
+      },
+    ],
+  });
 }
 
 /**
@@ -92,39 +116,49 @@ export function setDiscordPresence(client: Client, state: string) {
  * @param {Client} client - 디스코드 클라이언트
  * @param {MessageCreateOptions} msg - 메시지 내용
  */
-export async function sendAnnouncementMsgs(client: Client, msg: MessageCreateOptions) {
-	if (!process.env.DISCORD_NOTICE_CHANNEL_IDS) {
-		throw new Error('DISCORD_NOTICE_CHANNEL_IDS is not defined in environment variables.');
-	}
+export async function sendAnnouncementMsgs(
+  client: Client,
+  msg: MessageCreateOptions,
+) {
+  if (!process.env.DISCORD_NOTICE_CHANNEL_IDS) {
+    throw new Error(
+      "DISCORD_NOTICE_CHANNEL_IDS is not defined in environment variables.",
+    );
+  }
 
-	const noticeChannelIds = JSON.parse(process.env.DISCORD_NOTICE_CHANNEL_IDS) as string[];
-	for (const channelId of noticeChannelIds) {
-		const channel = await client.channels.fetch(channelId) as TextChannel;
+  const noticeChannelIds = JSON.parse(
+    process.env.DISCORD_NOTICE_CHANNEL_IDS,
+  ) as string[];
+  for (const channelId of noticeChannelIds) {
+    const channel = (await client.channels.fetch(channelId)) as TextChannel;
 
-		log.info(`Checking notice channel... in guild: ${channel.guild.name} (${channel.guild.id})`);
-		const messages = await channel.messages.fetch();
-		if (messages.size === 0) {
-			log.info('No message found. Sending new message...');
-			await channel.send(msg);
-			continue;
-		};
+    log.info(
+      `Checking notice channel... in guild: ${channel.guild.name} (${channel.guild.id})`,
+    );
+    const messages = await channel.messages.fetch();
+    if (messages.size === 0) {
+      log.info("No message found. Sending new message...");
+      await channel.send(msg);
+      continue;
+    }
 
-		if (messages.first()?.content.trim() != msg.content?.trim()) {
-			log.info('Message is not same. Deleting old message and sending new message...');
-			await messages.first()?.delete();
-			await channel.send(msg);
-		}
+    if (messages.first()?.content.trim() != msg.content?.trim()) {
+      log.info(
+        "Message is not same. Deleting old message and sending new message...",
+      );
+      await messages.first()?.delete();
+      await channel.send(msg);
+    }
 
-		log.info('Message is same.');
-	}
+    log.info("Message is same.");
+  }
 
-	log.info('Checked All Notice Channels.');
+  log.info("Checked All Notice Channels.");
 }
-
 
 /**
  * 로그 레벨을 설정합니다
  */
 export function setDefaultLogLevel() {
-	log.setDefaultLevel(process.env.LOG_LEVEL as LogLevelDesc || 'INFO');
+  log.setDefaultLevel((process.env.LOG_LEVEL as LogLevelDesc) || "INFO");
 }
