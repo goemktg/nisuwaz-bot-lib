@@ -43,6 +43,15 @@ export class EsiRequester {
 
     return response.data as APIcorpHistoryObject[];
   }
+
+  async getPriceHistoryFromTypeIdAndRegionId(regionId: string, typeId: string) {
+    const response = await axios.get(
+      `https://esi.evetech.net/latest/markets/${regionId}/history/?datasource=tranquility&type_id=${typeId}`,
+      { headers: this.GetHeaders },
+    );
+
+    return response.data as APIgetMarketHistoryObject[];
+  }
 }
 
 interface APIgetIdsFromNamesResponse {
@@ -64,4 +73,13 @@ interface APIgetNamesFromIdsObject {
   category: "corporation";
   id: number;
   name: string;
+}
+
+interface APIgetMarketHistoryObject {
+  average: number;
+  date: string;
+  highest: number;
+  lowest: number;
+  order_count: number;
+  volume: number;
 }
