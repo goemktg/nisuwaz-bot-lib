@@ -162,3 +162,11 @@ export async function sendAnnouncementMsgs(
 export function setDefaultLogLevel() {
   log.setDefaultLevel((process.env.LOG_LEVEL as LogLevelDesc) || "INFO");
 }
+
+export function getFormattedString(number: number, type: "number" | "percent") {
+  if (type === "number") {
+    return number.toLocaleString();
+  } else if (type === "percent") {
+    return `${(number * 100).toFixed(0)}`;
+  }
+}

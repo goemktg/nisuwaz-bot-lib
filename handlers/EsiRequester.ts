@@ -52,6 +52,15 @@ export class EsiRequester {
 
     return response.data as APIgetMarketHistoryObject[];
   }
+
+  async getKillmailInfo(killmailID: number, hash: string) {
+    const response = await axios.get(
+      `https://esi.evetech.net/latest/killmails/${killmailID}/${hash}/?datasource=tranquility`,
+      { headers: this.GetHeaders },
+    );
+
+    return response.data as APIkillmailObject;
+  }
 }
 
 interface APIgetIdsFromNamesResponse {
@@ -82,4 +91,43 @@ interface APIgetMarketHistoryObject {
   lowest: number;
   order_count: number;
   volume: number;
+}
+
+interface APIkillmailObject {
+  attackers: APIattackerObject[];
+  killmail_id: number;
+  killmail_time: string;
+  solar_system_id: number;
+  victim: {
+    alliance_id: number;
+    character_id: number;
+    corporation_id: number;
+    damage_taken: number;
+    items: APIitemsObject[];
+    position: {
+      x: number;
+      y: number;
+      z: number;
+    };
+    ship_type_id: number;
+  };
+}
+
+interface APIattackerObject {
+  alliance_id: number;
+  character_id: number;
+  corporation_id: number;
+  damage_done: number;
+  final_blow: boolean;
+  security_status: number;
+  ship_type_id: number;
+  weapon_type_id: number;
+}
+
+interface APIitemsObject {
+  flag: number;
+  item_type_id: number;
+  quantity_destroyed?: number;
+  quantity_dropped?: number;
+  singleton: number;
 }
