@@ -85,9 +85,18 @@ export class SeatRequester {
 
     return (await response.data) as APIGetSeatCharacterSheetResponse;
   }
+
+  async getUserFromId(userId: number) {
+    const response = await axios.get(
+      `https://seat.nisuwaz.com/api/v2/users/${userId}`,
+      { headers: this.GetHeaders },
+    );
+
+    return (await response.data) as APIGetSeatUserResponse;
+  }
 }
 
-export interface APIGetSeatUsersResponse {
+interface APIGetSeatUsersResponse {
   data: SeatUser[];
   links: {
     first: string;
@@ -106,7 +115,15 @@ export interface APIGetSeatUsersResponse {
   };
 }
 
-export interface SeatUser {
+interface APIGetSeatCharacterSheetResponse {
+  data: SeatCharacterSheet;
+}
+
+interface APIGetSeatUserResponse {
+  data: SeatUser;
+}
+
+interface SeatUser {
   id: number;
   name: string;
   email: string;
@@ -117,7 +134,7 @@ export interface SeatUser {
   main_character_id: string;
 }
 
-interface APIGetSeatCharacterSheetResponse {
+interface SeatCharacterSheet {
   name: string;
   description: string;
   corporation?: {

@@ -79,7 +79,16 @@ interface APIcorpHistoryObject {
 }
 
 interface APIgetNamesFromIdsObject {
-  category: "corporation";
+  category:
+    | "alliance"
+    | "character"
+    | "constellation"
+    | "corporation"
+    | "inventory_type"
+    | "region"
+    | "solar_system"
+    | "station"
+    | "faction";
   id: number;
   name: string;
 }
