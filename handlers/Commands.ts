@@ -92,6 +92,14 @@ export class CommandsHandler {
     }
 
     try {
+      if (interaction.client.allowedGuildIds && interaction.guildId) {
+        if (!interaction.client.allowedGuildIds.includes(interaction.guildId))
+          return;
+      } else if (interaction.client.ignoredGuildIds && interaction.guildId) {
+        if (interaction.client.ignoredGuildIds.includes(interaction.guildId))
+          return;
+      }
+
       command.execute(interaction);
     } catch (error) {
       console.error(error);

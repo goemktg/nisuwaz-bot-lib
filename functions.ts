@@ -170,3 +170,27 @@ export function getFormattedString(number: number, type: "number" | "percent") {
     return `${(number * 100).toFixed(0)}`;
   }
 }
+
+export async function applyCommandAllowedGuildList(client: Client) {
+  if (process.env.DISCORD_WHITELIST_GUILD_IDS) {
+    const allowedGuilds = JSON.parse(
+      process.env.DISCORD_WHITELIST_GUILD_IDS,
+    ) as string[];
+
+    client.allowedGuildIds = allowedGuilds;
+    for (const guildId of allowedGuilds) {
+      const guild = await client.guilds.fetch(guildId);
+      log.info(`Allowed commands for guild: ${guild.name} (${guild.id})`);
+    }
+  } else if (process.env.DISCORD_BLACKLIST_GUILD_IDS) {
+    const ignoredGuilds = JSON.parse(
+      process.env.DISCORD_BLACKLIST_GUILD_IDS,
+    ) as string[];
+
+    client.ignoredGuildIds = ignoredGuilds;
+    for (const guildId of ignoredGuilds) {
+      const guild = await client.guilds.fetch(guildId);
+      log.info(`Ignored commands for guild: ${guild.name} (${guild.id})`);
+    }
+  }
+}

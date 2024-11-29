@@ -21,5 +21,7 @@ declare module "discord.js" {
   export interface Client {
     commands: Collection<string, SlashCommand>;
     seatRoleApplier: SeatRoleApplier;
+    allowedGuildIds?: string[];
+    ignoredGuildIds?: string[];
   }
 }
