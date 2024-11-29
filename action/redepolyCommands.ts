@@ -14,4 +14,4 @@ if (!process.env.DISCORD_TOKEN) {
 }
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
-void commandsHandler.deployCommands(process.env.DISCORD_CLIENT_ID, rest);
+void commandsHandler.redeployCommands(process.env.DISCORD_CLIENT_ID, rest);

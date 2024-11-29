@@ -52,39 +52,33 @@ export class CommandsHandler {
     return commands;
   }
 
-  async deployCommands() {
-    if (!process.env.DISCORD_CLIENT_ID) {
-      throw new Error("DISCORD_CLIENT_ID is not defined in .env file.");
-    }
-    if (!process.env.DISCORD_TOKEN) {
-      throw new Error("DISCORD_TOKEN is not defined in .env file.");
-    }
-
-    const rest = new REST({ version: "10" }).setToken(
-      process.env.DISCORD_TOKEN,
-    );
+  async deployCommands(discordClientID: string, rest: REST) {
     const commands = await this.getCommandsFromDir();
-    const clientId = process.env.DISCORD_CLIENT_ID;
+    const clientId = discordClientID;
 
+    try {
+      await rest.put(Routes.applicationCommands(clientId), {
+        body: commands.map((command) => command.command.toJSON()),
+      });
+      log.info(
+        `Successfully deployed ${commands.size} application (/) commands.`,
+      );
+    } catch (error) {
+      log.error("Failed to deploy commands:", error);
+    }
+  }
+
+  async redeployCommands(discordClientID: string, rest: REST) {
     log.info("Started deleting ALL application (/) commands.");
 
-    await rest
-      .put(Routes.applicationCommands(clientId), { body: [] })
-      .then(() => log.info("Successfully deleted all application commands."))
-      .then(async () => {
-        log.info(
-          `Started deploying ${commands.size} application (/) commands.`,
-        );
+    try {
+      await rest.put(Routes.applicationCommands(discordClientID), { body: [] });
+      log.info("Successfully deleted all application commands.");
 
-        await rest.put(Routes.applicationCommands(clientId), {
-          body: commands.map((command) => command.command.toJSON()),
-        });
-      })
-      .then(() =>
-        log.info(
-          `Successfully deployed ${commands.size} application (/) commands.`,
-        ),
-      );
+      await this.deployCommands(discordClientID, rest);
+    } catch (error) {
+      log.error("Failed to redeploy commands:", error);
+    }
   }
 
   async executeCommand(interaction: ChatInputCommandInteraction) {
