@@ -1,6 +1,6 @@
 import { REST } from "discord.js";
 import { loadEnvironmentVariables, setDefaultLogLevel } from "../functions";
-import { CommandsHandler } from "../handlers/Commands";
+import { CommandsHandler } from "../classes/CommandHandler";
 
 loadEnvironmentVariables();
 setDefaultLogLevel();

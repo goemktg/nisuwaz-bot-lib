@@ -13,8 +13,10 @@ import log, { LogLevelDesc } from "loglevel";
  */
 export function loadEnvironmentVariables() {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require("./loadEnvironmentVariables");
-  } catch (ex) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (e) {
     log.warn(".env not found. using docker environment variable");
   }
 }
