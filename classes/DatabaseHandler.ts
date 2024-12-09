@@ -12,7 +12,7 @@ export class DatabaseHandler {
     });
   }
 
-  //TODO: Mode complex type handling
+  //FIXME: 타입 정의
   async query(query: string, values: unknown[]) {
     return await this.client.query(query, values);
   }
