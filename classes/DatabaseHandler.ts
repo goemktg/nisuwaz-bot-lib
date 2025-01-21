@@ -13,7 +13,7 @@ export class DatabaseHandler {
   }
 
   //FIXME: 타입 정의
-  async query(query: string, values: unknown[]) {
+  async query(query: string, values?: unknown[]) {
     return await this.client.query(query, values);
   }
 }
