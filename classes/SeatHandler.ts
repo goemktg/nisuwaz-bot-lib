@@ -1,7 +1,7 @@
 import axios from "axios";
 import log from "loglevel";
 
-export class SeatRequester {
+export class SeatHanlder {
   private DeleteHeaders: object;
   private PostHeaders: object;
   private GetHeaders: object;
@@ -94,6 +94,21 @@ export class SeatRequester {
 
     return (await response.data) as APIGetSeatUserResponse;
   }
+
+  async getCorpContracts(corpId: number, page: number) {
+    const response = await axios.get(
+      `https://seat.nisuwaz.com/api/v2/corporation/contracts/${corpId}?page=${page}`,
+      { headers: this.GetHeaders },
+    );
+
+    return (await response.data) as APIGetContractsResponse;
+  }
+}
+
+interface seatEntity {
+  entity_id: number;
+  name: string;
+  category: string;
 }
 
 interface APIGetSeatUsersResponse {
@@ -113,6 +128,49 @@ interface APIGetSeatUsersResponse {
     to: number;
     total: number;
   };
+}
+
+interface APIGetContractsResponse {
+  data: SeatContract[];
+  links: {
+    first: string;
+    last: string;
+    prev: string;
+    next: string;
+  };
+  meta: {
+    current_page: number;
+    from: number;
+    last_page: number;
+    path: string;
+    per_page: number;
+    to: number;
+    total: number;
+  };
+}
+
+interface SeatContract {
+  contract_id: number;
+  type: string;
+  status: string;
+  title: string;
+  for_corporation: boolean;
+  availability: string;
+  date_issued: string;
+  date_expired: string;
+  date_accepted: string;
+  days_to_complete: number;
+  date_completed: string;
+  price: number;
+  reward: number;
+  collateral: number;
+  buyout: number;
+  volume: number;
+  issuer: seatEntity;
+  assignee: seatEntity;
+  acceptor: seatEntity;
+  // TODO: add lines field
+  // lines
 }
 
 interface APIGetSeatCharacterSheetResponse {
