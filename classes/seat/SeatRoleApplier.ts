@@ -1,7 +1,7 @@
-import { SeatRequester } from "./SeatHandler";
+import { SeatHanlder } from "./SeatHandler";
 
 export class SeatRoleApplier {
-  private seatRequester: SeatRequester = new SeatRequester();
+  private seatHanler: SeatHanlder = new SeatHanlder();
   private seatUsersCache = new Map<string, SeatUser>();
 
   /**
@@ -14,7 +14,7 @@ export class SeatRoleApplier {
     let seatUserIndex = 1;
 
     while (user === undefined) {
-      const seatUsers = await this.seatRequester.getUsers(seatUserIndex);
+      const seatUsers = await this.seatHanler.getUsers(seatUserIndex);
 
       for (const seatUser of seatUsers.data) {
         this.seatUsersCache.set(seatUser.name, seatUser);
@@ -37,7 +37,7 @@ export class SeatRoleApplier {
    */
   async add(mainCharacterName: string, roleId: string) {
     const seatUserId = await this.getSeatUserId(mainCharacterName);
-    await this.seatRequester.addUserRole(seatUserId, roleId);
+    await this.seatHanler.addUserRole(seatUserId, roleId);
   }
 
   /**
@@ -47,7 +47,7 @@ export class SeatRoleApplier {
    */
   async remove(mainCharacterName: string, roleId: string) {
     const seatUserId = await this.getSeatUserId(mainCharacterName);
-    await this.seatRequester.removeUserRole(seatUserId, roleId);
+    await this.seatHanler.removeUserRole(seatUserId, roleId);
   }
 }
 

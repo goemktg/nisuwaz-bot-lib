@@ -7,7 +7,7 @@ import {
   CacheType,
   Collection,
 } from "discord.js";
-import { SeatRoleApplier } from "./classes/SeatRoleApplier";
+import { SeatRoleApplier } from "./classes/seat/SeatRoleApplier";
 import { DatabaseHandler } from "./classes/DatabaseHandler";
 
 export interface SlashCommand {
