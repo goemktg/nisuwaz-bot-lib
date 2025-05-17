@@ -1,7 +1,11 @@
 import { SeatHanlder } from "./SeatHandler";
 
-export class SeatRoleApplier {
-  private seatHanler: SeatHanlder = new SeatHanlder();
+/**
+ * SeatRoleEngine은 SeatHanlder를 사용하여 유저에게 롤을 부여하거나 제거하는 엔진입니다.
+ * 이 엔진은 유저의 이름을 키로 사용하여 유저를 캐시하고, 캐시에 없는 유저의 경우 SeatHanlder를 사용하여 유저를 조회합니다.
+ * NOTE: SeAT 에서 User가 절대 삭제되지 않는다는 가정 하에 만들어졌습니다.
+**/
+export class SeatRoleEngine {
   private seatUsersCache = new Map<string, SeatUser>();
 
   /**
@@ -14,7 +18,7 @@ export class SeatRoleApplier {
     let seatUserIndex = 1;
 
     while (user === undefined) {
-      const seatUsers = await this.seatHanler.getUsers(seatUserIndex);
+      const seatUsers = await SeatHanlder.getUsers(seatUserIndex);
 
       for (const seatUser of seatUsers.data) {
         this.seatUsersCache.set(seatUser.name, seatUser);
@@ -37,7 +41,7 @@ export class SeatRoleApplier {
    */
   async add(mainCharacterName: string, roleId: string) {
     const seatUserId = await this.getSeatUserId(mainCharacterName);
-    await this.seatHanler.addUserRole(seatUserId, roleId);
+    await SeatHanlder.addUserRole(seatUserId, roleId);
   }
 
   /**
@@ -47,7 +51,7 @@ export class SeatRoleApplier {
    */
   async remove(mainCharacterName: string, roleId: string) {
     const seatUserId = await this.getSeatUserId(mainCharacterName);
-    await this.seatHanler.removeUserRole(seatUserId, roleId);
+    await SeatHanlder.removeUserRole(seatUserId, roleId);
   }
 }
 

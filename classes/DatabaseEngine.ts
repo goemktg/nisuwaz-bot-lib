@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 
-export class DatabaseHandler {
+export class DatabaseEngine {
   private client: Pool;
 
   constructor() {

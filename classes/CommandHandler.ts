@@ -14,7 +14,7 @@ interface CommandFile {
 }
 
 export class CommandsHandler {
-  async getCommandsFromDir() {
+  static async getCommandsFromDir() {
     let ignoreCommands: string[] = [];
 
     if (!process.env.DISCORD_IGNORED_COMMANDS) {
@@ -52,7 +52,7 @@ export class CommandsHandler {
     return commands;
   }
 
-  async deployCommands(discordClientID: string, rest: REST) {
+  static async deployCommands(discordClientID: string, rest: REST) {
     const commands = await this.getCommandsFromDir();
     const clientId = discordClientID;
 
@@ -68,7 +68,7 @@ export class CommandsHandler {
     }
   }
 
-  async redeployCommands(discordClientID: string, rest: REST) {
+  static async redeployCommands(discordClientID: string, rest: REST) {
     log.info("Started deleting ALL application (/) commands.");
 
     try {
@@ -81,7 +81,7 @@ export class CommandsHandler {
     }
   }
 
-  async executeCommand(interaction: ChatInputCommandInteraction) {
+  static async executeCommand(interaction: ChatInputCommandInteraction) {
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {

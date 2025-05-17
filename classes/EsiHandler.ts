@@ -1,22 +1,22 @@
 import axios from "axios";
 
 export class EsiRequester {
-  private PostHeaders: object;
-  private GetHeaders: object;
+  private static PostHeaders: object;
+  private static GetHeaders: object;
 
   constructor() {
-    this.PostHeaders = {
+    EsiRequester.PostHeaders = {
       accept: "application/json",
       "Content-Type": "application/json",
       "Cache-Control": "no-cache",
     };
-    this.GetHeaders = {
+    EsiRequester.GetHeaders = {
       accept: "application/json",
       "Cache-Control": "no-cache",
     };
   }
 
-  async getIdsFromNames(nameArray: string[]) {
+  static async getIdsFromNames(nameArray: string[]) {
     const url =
       "https://esi.evetech.net/latest/universe/ids/?datasource=tranquility&language=en";
     const headers = { ...this.PostHeaders, "accept-language": "en" };
@@ -25,7 +25,7 @@ export class EsiRequester {
     return response.data as APIgetIdsFromNamesResponse;
   }
 
-  async getNamesFromIds(idArray: number[]) {
+  static async getNamesFromIds(idArray: number[]) {
     const url =
       "https://esi.evetech.net/latest/universe/names/?datasource=tranquility&language=en";
 
@@ -35,7 +35,7 @@ export class EsiRequester {
     return response.data as APIgetNamesFromIdsObject[];
   }
 
-  async getCorpHistoryFromCharId(characterId: string) {
+  static async getCorpHistoryFromCharId(characterId: string) {
     const response = await axios.get(
       `https://esi.evetech.net/latest/characters/${characterId}/corporationhistory/?datasource=tranquility`,
       { headers: this.GetHeaders },
@@ -44,7 +44,7 @@ export class EsiRequester {
     return response.data as APIcorpHistoryObject[];
   }
 
-  async getPriceHistoryFromTypeIdAndRegionId(regionId: string, typeId: string) {
+  static async getPriceHistoryFromTypeIdAndRegionId(regionId: string, typeId: string) {
     const response = await axios.get(
       `https://esi.evetech.net/latest/markets/${regionId}/history/?datasource=tranquility&type_id=${typeId}`,
       { headers: this.GetHeaders },
@@ -53,7 +53,7 @@ export class EsiRequester {
     return response.data as APIgetMarketHistoryObject[];
   }
 
-  async getKillmailInfo(killmailID: number, hash: string) {
+  static async getKillmailInfo(killmailID: number, hash: string) {
     const response = await axios.get(
       `https://esi.evetech.net/latest/killmails/${killmailID}/${hash}/?datasource=tranquility`,
       { headers: this.GetHeaders },

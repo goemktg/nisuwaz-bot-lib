@@ -9,7 +9,7 @@ export class ZkillboardRequester {
       "Accept-Encoding": "gzip",
     };
   }
-  async getKillmailInfo(killmailID: string) {
+  static async getKillmailInfo(killmailID: string) {
     const response = await axios.get(
       `https://zkillboard.com/api/killID/${killmailID}/`,
     );

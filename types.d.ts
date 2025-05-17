@@ -7,8 +7,8 @@ import {
   CacheType,
   Collection,
 } from "discord.js";
-import { SeatRoleApplier } from "./classes/seat/SeatRoleApplier";
-import { DatabaseHandler } from "./classes/DatabaseHandler";
+import { SeatRoleEngine } from "./classes/seat/SeatRoleEngine";
+import { DatabaseEngine } from "./classes/DatabaseEngine";
 
 export interface SlashCommand {
   command: SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
@@ -21,8 +21,8 @@ export interface SlashCommand {
 declare module "discord.js" {
   export interface Client {
     commands: Collection<string, SlashCommand>;
-    seatRoleApplier?: SeatRoleApplier;
-    databaseHandler?: DatabaseHandler;
+    seatRoleEngine?: SeatRoleEngine;
+    databaseEngine?: DatabaseEngine;
     allowedGuildIds?: string[];
     ignoredGuildIds?: string[];
   }

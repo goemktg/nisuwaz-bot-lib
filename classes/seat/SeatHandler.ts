@@ -2,24 +2,24 @@ import axios from "axios";
 import log from "loglevel";
 
 export class SeatHanlder {
-  private DeleteHeaders: object;
-  private PostHeaders: object;
-  private GetHeaders: object;
+  private static DeleteHeaders: object;
+  private static PostHeaders: object;
+  private static GetHeaders: object;
 
   constructor() {
     if (process.env.SEAT_TOKEN === undefined)
       throw new Error("SEAT_TOKEN is not defined in .env file.");
 
-    this.DeleteHeaders = {
+    SeatHanlder.DeleteHeaders = {
       accept: "*/*",
       "X-TOKEN": process.env.SEAT_TOKEN,
     };
-    this.PostHeaders = {
+    SeatHanlder.PostHeaders = {
       accept: "*/*",
       "Content-Type": "application/json",
       "X-TOKEN": process.env.SEAT_TOKEN,
     };
-    this.GetHeaders = {
+    SeatHanlder.GetHeaders = {
       accept: "application/json",
       "X-TOKEN": process.env.SEAT_TOKEN,
     };
@@ -30,7 +30,7 @@ export class SeatHanlder {
    * @param {string} seatUserId
    * @param {string} seatRoleId
    */
-  async removeUserRole(seatUserId: string, seatRoleId: string) {
+  static async removeUserRole(seatUserId: string, seatRoleId: string) {
     log.info(`removing role ${seatRoleId} from user ${seatUserId}`);
 
     await axios.delete(
@@ -44,7 +44,7 @@ export class SeatHanlder {
    * @param {string} seatUserId
    * @param {string} seatRoleId
    */
-  async addUserRole(seatUserId: string, seatRoleId: string) {
+  static async addUserRole(seatUserId: string, seatRoleId: string) {
     log.info(`adding role ${seatRoleId} to user ${seatUserId}`);
 
     const url = "https://seat.nisuwaz.com/api/v2/roles/members";
@@ -61,7 +61,7 @@ export class SeatHanlder {
    * @param {number} page
    * @returns {Promise<APIGetSeatUsersResponse>}
    */
-  async getUsers(page = 1): Promise<APIGetSeatUsersResponse> {
+  static async getUsers(page = 1): Promise<APIGetSeatUsersResponse> {
     const response = await axios.get(
       `https://seat.nisuwaz.com/api/v2/users?page=${page}`,
       { headers: this.GetHeaders },
@@ -75,7 +75,7 @@ export class SeatHanlder {
    * @param {string} characterId
    * @returns {Promise<APIGetSeatCharacterSheetResponse>}
    */
-  async getCharacterSheetFromId(
+  static async getCharacterSheetFromId(
     characterId: string,
   ): Promise<APIGetSeatCharacterSheetResponse> {
     const response = await axios.get(
@@ -86,7 +86,7 @@ export class SeatHanlder {
     return (await response.data) as APIGetSeatCharacterSheetResponse;
   }
 
-  async getUserFromId(userId: number) {
+  static async getUserFromId(userId: number) {
     const response = await axios.get(
       `https://seat.nisuwaz.com/api/v2/users/${userId}`,
       { headers: this.GetHeaders },
@@ -95,7 +95,7 @@ export class SeatHanlder {
     return (await response.data) as APIGetSeatUserResponse;
   }
 
-  async getCorpContracts(corpId: number, page: number) {
+  static async getCorpContracts(corpId: number, page: number) {
     const response = await axios.get(
       `https://seat.nisuwaz.com/api/v2/corporation/contracts/${corpId}?page=${page}`,
       { headers: this.GetHeaders },
