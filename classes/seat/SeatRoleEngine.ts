@@ -35,7 +35,7 @@ export class SeatRoleEngine {
   }
 
   /**
-   * seatUserId에 해당하는 유저에게 뉴비 롤을 부여합니다.
+   * mainCharacterName에 해당하는 유저에게 뉴비 롤을 부여합니다.
    * @param {string} mainCharacterName
    * @param {string} roleId
    */
@@ -45,7 +45,7 @@ export class SeatRoleEngine {
   }
 
   /**
-   * seatUserId에 해당하는 유저에게 roleId에 해당하는 롤을 제거합니다.
+   * mainCharacterName에 해당하는 roleId에 해당하는 롤을 제거합니다.
    * @param {string} mainCharacterName
    * @param {string} roleId
    */
