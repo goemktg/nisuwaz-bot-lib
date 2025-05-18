@@ -1,12 +1,19 @@
 import axios from "axios";
 import log from "loglevel";
 
+// axios의 기본 헤더를 제거하는 인터셉터 설정
+axios.interceptors.request.use((config) => {
+  // 기본 Accept 헤더 제거
+  delete config.headers.Accept;
+  return config;
+});
+
 export class SeatHanlder {
   private static DeleteHeaders: object;
   private static PostHeaders: object;
   private static GetHeaders: object;
 
-  constructor() {
+  private static initialize() {
     if (process.env.SEAT_TOKEN === undefined)
       throw new Error("SEAT_TOKEN is not defined in .env file.");
 
@@ -31,6 +38,7 @@ export class SeatHanlder {
    * @param {string} seatRoleId
    */
   static async removeUserRole(seatUserId: string, seatRoleId: string) {
+    this.initialize();
     log.info(`removing role ${seatRoleId} from user ${seatUserId}`);
 
     await axios.delete(
@@ -45,6 +53,7 @@ export class SeatHanlder {
    * @param {string} seatRoleId
    */
   static async addUserRole(seatUserId: string, seatRoleId: string) {
+    this.initialize();
     log.info(`adding role ${seatRoleId} to user ${seatUserId}`);
 
     const url = "https://seat.nisuwaz.com/api/v2/roles/members";
@@ -62,6 +71,7 @@ export class SeatHanlder {
    * @returns {Promise<APIGetSeatUsersResponse>}
    */
   static async getUsers(page = 1): Promise<APIGetSeatUsersResponse> {
+    this.initialize();
     const response = await axios.get(
       `https://seat.nisuwaz.com/api/v2/users?page=${page}`,
       { headers: this.GetHeaders },
@@ -78,6 +88,7 @@ export class SeatHanlder {
   static async getCharacterSheetFromId(
     characterId: string,
   ): Promise<APIGetSeatCharacterSheetResponse> {
+    this.initialize();
     const response = await axios.get(
       `https://seat.nisuwaz.com/api/v2/character/sheet/${characterId}`,
       { headers: this.GetHeaders },
@@ -87,6 +98,7 @@ export class SeatHanlder {
   }
 
   static async getUserFromId(userId: number) {
+    this.initialize();
     const response = await axios.get(
       `https://seat.nisuwaz.com/api/v2/users/${userId}`,
       { headers: this.GetHeaders },
@@ -96,6 +108,7 @@ export class SeatHanlder {
   }
 
   static async getCorpContracts(corpId: number, page: number) {
+    this.initialize();
     const response = await axios.get(
       `https://seat.nisuwaz.com/api/v2/corporation/contracts/${corpId}?page=${page}`,
       { headers: this.GetHeaders },
