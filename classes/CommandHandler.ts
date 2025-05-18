@@ -52,16 +52,20 @@ export class CommandsHandler {
     return commands;
   }
 
-  static async deployCommands(discordClientID: string, rest: REST) {
+  static async deployCommands(discordClientID: string, rest: REST, guildId?: string) {
     const commands = await this.getCommandsFromDir();
     const clientId = discordClientID;
 
     try {
-      await rest.put(Routes.applicationCommands(clientId), {
+      const route = guildId 
+        ? Routes.applicationGuildCommands(clientId, guildId)
+        : Routes.applicationCommands(clientId);
+
+      await rest.put(route, {
         body: commands.map((command) => command.command.toJSON()),
       });
       log.info(
-        `Successfully deployed ${commands.size} application (/) commands.`,
+        `Successfully deployed ${commands.size} application (/) commands${guildId ? ` to guild ${guildId}` : ' globally'}.`,
       );
     } catch (error) {
       log.error("Failed to deploy commands:", error);
