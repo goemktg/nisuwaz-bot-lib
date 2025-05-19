@@ -52,45 +52,30 @@ export class CommandsHandler {
     return commands;
   }
 
-  static async removeCommandsFromGuild(discordClientID: string, rest: REST, guildId: string) {
-    const commands = await this.getCommandsFromDir();
-    const clientId = discordClientID;
+  static async removeCommands(discordClientID: string, rest: REST, guildId?: string) {
+    const route = guildId 
+    ? Routes.applicationGuildCommands(discordClientID, guildId)
+    : Routes.applicationCommands(discordClientID);
 
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
-    log.info(`Successfully removed ${commands.size} application (/) commands from guild ${guildId}`);
+    await rest.put(route, { body: [] });
+    log.info(
+      `Successfully removed ALL application (/) commands${guildId ? ` from guild ${guildId}` : ' globally'}.`,
+    );
   }
 
   static async deployCommands(discordClientID: string, rest: REST, guildId?: string) {
     const commands = await this.getCommandsFromDir();
-    const clientId = discordClientID;
 
-    try {
-      const route = guildId 
-        ? Routes.applicationGuildCommands(clientId, guildId)
-        : Routes.applicationCommands(clientId);
+    const route = guildId 
+    ? Routes.applicationGuildCommands(discordClientID, guildId)
+    : Routes.applicationCommands(discordClientID);
 
-      await rest.put(route, {
-        body: commands.map((command) => command.command.toJSON()),
-      });
-      log.info(
-        `Successfully deployed ${commands.size} application (/) commands${guildId ? ` to guild ${guildId}` : ' globally'}.`,
-      );
-    } catch (error) {
-      log.error("Failed to deploy commands:", error);
-    }
-  }
-
-  static async redeployCommands(discordClientID: string, rest: REST) {
-    log.info("Started deleting ALL application (/) commands.");
-
-    try {
-      await rest.put(Routes.applicationCommands(discordClientID), { body: [] });
-      log.info("Successfully deleted all application commands.");
-
-      await this.deployCommands(discordClientID, rest);
-    } catch (error) {
-      log.error("Failed to redeploy commands:", error);
-    }
+    await rest.put(route, {
+      body: commands.map((command) => command.command.toJSON()),
+    });
+    log.info(
+      `Successfully deployed ${commands.size} application (/) commands${guildId ? ` to guild ${guildId}` : ' globally'}.`,
+    );
   }
 
   static async executeCommand(interaction: ChatInputCommandInteraction) {

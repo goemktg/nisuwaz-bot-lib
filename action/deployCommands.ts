@@ -10,13 +10,19 @@ const program = new Command();
 
 program
   .description("Deploy commands to Discord")
-  .option("-rd, --redeploy", "Redeploy commands")
+  .option("-f, --force", "Force deploy commands")
   .option("-g, --guild <guildId>", "Deploy commands to a specific guild")
-  .option("-r, --remove", "Remove commands from a specific guild")
-  .action((options) => {
-    const { redeploy, guild, remove } = options;
-    if (redeploy && guild) {
-      console.error("Redeploying commands to a specific guild is not supported.");
+  .option("-r, --remove <guildId>", "Remove commands from a specific guild")
+  .action(async (options) => {
+    const { force, guild, remove } = options;
+    
+    // 옵션 조합 검사
+    if (force && (guild || remove)) {
+      console.error("Force option cannot be used with guild or remove options.");
+      process.exit(1);
+    }
+    if (guild && remove) {
+      console.error("Guild and remove options cannot be used together.");
       process.exit(1);
     }
 
@@ -26,26 +32,25 @@ program
     if (!process.env.DISCORD_TOKEN) {
       throw new Error("DISCORD_TOKEN is not defined in .env file.");
     }
-    if (redeploy) {
+
+    const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
+    if (force) {
       console.log('🔁 Redeploying commands globally...');
       
-      const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
-      void CommandsHandler.redeployCommands(process.env.DISCORD_CLIENT_ID, rest);
+      await CommandsHandler.removeCommands(process.env.DISCORD_CLIENT_ID, rest);
+      await CommandsHandler.deployCommands(process.env.DISCORD_CLIENT_ID, rest);
     } else if (remove) {
-      console.log(`🏠 Removing commands from guildId: ${guild}`);
+      console.log(`🏠 Removing commands from guildId: ${remove}`);
       
-      const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
-      void CommandsHandler.removeCommandsFromGuild(process.env.DISCORD_CLIENT_ID, rest, guild);
+      await CommandsHandler.removeCommands(process.env.DISCORD_CLIENT_ID, rest, remove);
     } else if (guild) {
       console.log(`🏠 Deploying commands to guildId: ${guild}`);
       
-      const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
-      void CommandsHandler.deployCommands(process.env.DISCORD_CLIENT_ID, rest, guild);
+      await CommandsHandler.deployCommands(process.env.DISCORD_CLIENT_ID, rest, guild);
     } else {
       console.log('🌍 Deploying commands globally...');
       
-      const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
-      void CommandsHandler.deployCommands(process.env.DISCORD_CLIENT_ID, rest);
+      await CommandsHandler.deployCommands(process.env.DISCORD_CLIENT_ID, rest);
     }
   });
 
