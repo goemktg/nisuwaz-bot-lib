@@ -52,6 +52,14 @@ export class CommandsHandler {
     return commands;
   }
 
+  static async removeCommandsFromGuild(discordClientID: string, rest: REST, guildId: string) {
+    const commands = await this.getCommandsFromDir();
+    const clientId = discordClientID;
+
+    await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
+    log.info(`Successfully removed ${commands.size} application (/) commands from guild ${guildId}`);
+  }
+
   static async deployCommands(discordClientID: string, rest: REST, guildId?: string) {
     const commands = await this.getCommandsFromDir();
     const clientId = discordClientID;

@@ -10,10 +10,11 @@ const program = new Command();
 
 program
   .description("Deploy commands to Discord")
-  .option("-r, --redeploy", "Redeploy commands")
+  .option("-rd, --redeploy", "Redeploy commands")
   .option("-g, --guild <guildId>", "Deploy commands to a specific guild")
+  .option("-r, --remove", "Remove commands from a specific guild")
   .action((options) => {
-    const { redeploy, guild } = options;
+    const { redeploy, guild, remove } = options;
     if (redeploy && guild) {
       console.error("Redeploying commands to a specific guild is not supported.");
       process.exit(1);
@@ -30,6 +31,11 @@ program
       
       const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
       void CommandsHandler.redeployCommands(process.env.DISCORD_CLIENT_ID, rest);
+    } else if (remove) {
+      console.log(`🏠 Removing commands from guildId: ${guild}`);
+      
+      const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
+      void CommandsHandler.removeCommandsFromGuild(process.env.DISCORD_CLIENT_ID, rest, guild);
     } else if (guild) {
       console.log(`🏠 Deploying commands to guildId: ${guild}`);
       
