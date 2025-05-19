@@ -36,7 +36,7 @@ program
       const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
       void CommandsHandler.deployCommands(process.env.DISCORD_CLIENT_ID, rest, guild);
     } else {
-      console.log('🔁 Deploying commands globally...');
+      console.log('🌍 Deploying commands globally...');
       
       const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
       void CommandsHandler.deployCommands(process.env.DISCORD_CLIENT_ID, rest);
