@@ -4,7 +4,7 @@ import { SeatHanlder } from "./SeatHandler";
  * SeatRoleEngine은 SeatHanlder를 사용하여 유저에게 롤을 부여하거나 제거하는 엔진입니다.
  * 이 엔진은 유저의 이름을 키로 사용하여 유저를 캐시하고, 캐시에 없는 유저의 경우 SeatHanlder를 사용하여 유저를 조회합니다.
  * NOTE: SeAT 에서 User가 절대 삭제되지 않는다는 가정 하에 만들어졌습니다.
-**/
+ **/
 export class SeatRoleEngine {
   private seatUsersCache = new Map<string, SeatUser>();
 

@@ -44,7 +44,10 @@ export class EsiRequester {
     return response.data as APIcorpHistoryObject[];
   }
 
-  static async getPriceHistoryFromTypeIdAndRegionId(regionId: string, typeId: string) {
+  static async getPriceHistoryFromTypeIdAndRegionId(
+    regionId: string,
+    typeId: string,
+  ) {
     const response = await axios.get(
       `https://esi.evetech.net/latest/markets/${regionId}/history/?datasource=tranquility&type_id=${typeId}`,
       { headers: this.GetHeaders },

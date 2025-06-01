@@ -52,29 +52,37 @@ export class CommandsHandler {
     return commands;
   }
 
-  static async removeCommands(discordClientID: string, rest: REST, guildId?: string) {
-    const route = guildId 
-    ? Routes.applicationGuildCommands(discordClientID, guildId)
-    : Routes.applicationCommands(discordClientID);
+  static async removeCommands(
+    discordClientID: string,
+    rest: REST,
+    guildId?: string,
+  ) {
+    const route = guildId
+      ? Routes.applicationGuildCommands(discordClientID, guildId)
+      : Routes.applicationCommands(discordClientID);
 
     await rest.put(route, { body: [] });
     log.info(
-      `Successfully removed ALL application (/) commands${guildId ? ` from guild ${guildId}` : ' globally'}.`,
+      `Successfully removed ALL application (/) commands${guildId ? ` from guild ${guildId}` : " globally"}.`,
     );
   }
 
-  static async deployCommands(discordClientID: string, rest: REST, guildId?: string) {
+  static async deployCommands(
+    discordClientID: string,
+    rest: REST,
+    guildId?: string,
+  ) {
     const commands = await this.getCommandsFromDir();
 
-    const route = guildId 
-    ? Routes.applicationGuildCommands(discordClientID, guildId)
-    : Routes.applicationCommands(discordClientID);
+    const route = guildId
+      ? Routes.applicationGuildCommands(discordClientID, guildId)
+      : Routes.applicationCommands(discordClientID);
 
     await rest.put(route, {
       body: commands.map((command) => command.command.toJSON()),
     });
     log.info(
-      `Successfully deployed ${commands.size} application (/) commands${guildId ? ` to guild ${guildId}` : ' globally'}.`,
+      `Successfully deployed ${commands.size} application (/) commands${guildId ? ` to guild ${guildId}` : " globally"}.`,
     );
   }
 
